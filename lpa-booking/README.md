@@ -1,6 +1,6 @@
 # LPA & AMD Certification Booking System
 
-A full booking and session management system for LPA & AMD certification sessions.
+A full booking and session management system for LPA & AMD certification sessions. 
 
 ## Panels
 
