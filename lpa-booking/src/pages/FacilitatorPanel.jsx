@@ -19,7 +19,6 @@ export default function FacilitatorPanel() {
   const [loading, setLoading] = useState(false)
   const [modal, setModal] = useState(null)
 
-  // Session form state
   const [sessDate, setSessDate] = useState('')
   const [sessStart, setSessStart] = useState('13:30')
   const [sessEnd, setSessEnd] = useState('17:30')
@@ -39,7 +38,6 @@ export default function FacilitatorPanel() {
     }
   }, [])
 
-  // Real-time subscription
   useEffect(() => {
     if (!authed || !session) return
     const sub = supabase
@@ -73,7 +71,6 @@ export default function FacilitatorPanel() {
       }
       const saved = await upsertSession(payload)
       setSession(saved)
-      // Upsert rooms with session_id
       const roomRows = rooms.map((r, i) => ({
         ...(r.id && !r.id.startsWith('new_') ? { id: r.id } : {}),
         session_id: saved.id,
@@ -127,6 +124,7 @@ export default function FacilitatorPanel() {
       booker_name: data.name,
       phone: data.phone,
       email: '',
+      consultant: '',
       slot_time: data.slot,
       arrived: true,
       done: false,
@@ -176,7 +174,6 @@ export default function FacilitatorPanel() {
         <button className="btn btn-ghost" onClick={() => setAuthed(false)}><i className="ti ti-logout" /> Sign out</button>
       </div>
 
-      {/* Session config */}
       <div className="card">
         <div className="card-title"><i className="ti ti-settings" aria-hidden="true" /> Session setup</div>
         <div className="form-row">
@@ -216,7 +213,6 @@ export default function FacilitatorPanel() {
         <button className="btn btn-primary" onClick={saveSession}><i className="ti ti-device-floppy" /> Save session</button>
       </div>
 
-      {/* Client list */}
       {session && (
         <div className="card">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
@@ -246,7 +242,7 @@ export default function FacilitatorPanel() {
                           {b.persons?.length > 1 && <span style={{ fontWeight: 400, fontSize: 12, color: 'var(--muted)', marginLeft: 6 }}>+{b.persons.length - 1}</span>}
                           {b.is_walkin && <span className="badge badge-amber" style={{ marginLeft: 6 }}>walk-in</span>}
                         </div>
-                        <div className="client-meta">{b.phone} · Room: {room?.name || '—'}</div>
+                        <div className="client-meta">{b.phone}{b.consultant ? ` · ${b.consultant}` : ''} · Room: {room?.name || '—'}</div>
                         <div style={{ marginTop: 4, display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                           {certs.map(c => <span key={c} className={`badge ${c.includes('AMD') ? 'badge-purple' : 'badge-teal'}`}>{c}</span>)}
                         </div>
@@ -281,7 +277,6 @@ export default function FacilitatorPanel() {
         </div>
       )}
 
-      {/* Rooms view */}
       {session && rooms.length > 0 && (
         <div className="card">
           <div className="card-title"><i className="ti ti-layout-columns" aria-hidden="true" /> Room queues</div>
@@ -312,7 +307,6 @@ export default function FacilitatorPanel() {
         </div>
       )}
 
-      {/* Modals */}
       {modal?.type === 'assign' && (
         <Modal title="Assign to room" onClose={() => setModal(null)}>
           {rooms.map(r => (
@@ -344,6 +338,7 @@ function ViewBooking({ booking: b }) {
       <p style={{ marginBottom: 6 }}><b>Booker:</b> {b.booker_name}</p>
       <p style={{ marginBottom: 6 }}><b>Phone:</b> {b.phone}</p>
       <p style={{ marginBottom: 6 }}><b>Email:</b> {b.email || '—'}</p>
+      <p style={{ marginBottom: 6 }}><b>Consultant:</b> {b.consultant || '—'}</p>
       <p style={{ marginBottom: '1rem' }}><b>Slot:</b> {fmt12(b.slot_time)}</p>
       <div style={{ fontSize: 13, fontWeight: 500, marginBottom: 6 }}>Persons:</div>
       {(b.persons || []).map((p, i) => (
