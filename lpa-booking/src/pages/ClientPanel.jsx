@@ -61,8 +61,8 @@ export default function ClientPanel() {
 
   async function submit() {
     setError('')
-    if (!booker.name.trim() || !booker.phone.trim() || !booker.email.trim()) {
-      setError('Please fill in your name, phone number and email.'); return
+    if (!booker.name.trim() || !booker.phone.trim() || !booker.email.trim() || !booker.consultant.trim()) {
+      setError('Please fill in all fields including your financial consultant.'); return
     }
     if (!selectedSlot) { setError('Please select a time slot.'); return }
     for (let i = 0; i < persons.length; i++) {
@@ -119,11 +119,9 @@ export default function ClientPanel() {
             <div style={{ fontSize: 13, marginBottom: 4 }}>
               <b>Group:</b> {done.persons.map(p => `${p.name} (${p.cert})`).join(', ')}
             </div>
-            {done.consultant && (
-              <div style={{ fontSize: 13, marginBottom: 4 }}>
-                <b>Financial consultant:</b> {done.consultant}
-              </div>
-            )}
+            <div style={{ fontSize: 13, marginBottom: 4 }}>
+              <b>Financial consultant:</b> {done.consultant}
+            </div>
             <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: '0.75rem' }}>
               Please bring all required documents and arrive 5 minutes early.
             </div>
@@ -174,7 +172,7 @@ export default function ClientPanel() {
               <input type="email" placeholder="you@email.com" value={booker.email} onChange={e => setBooker({ ...booker, email: e.target.value })} />
             </div>
             <div className="form-group" style={{ marginBottom: 0 }}>
-              <label>Financial consultant <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0, color: 'var(--muted)', fontSize: 11 }}>(optional)</span></label>
+              <label>Financial consultant</label>
               <input type="text" placeholder="Consultant's name" value={booker.consultant} onChange={e => setBooker({ ...booker, consultant: e.target.value })} />
             </div>
           </div>
