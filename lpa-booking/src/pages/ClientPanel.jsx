@@ -31,15 +31,13 @@ export default function ClientPanel() {
   const [bookings, setBookings] = useState([])
   const [loading, setLoading] = useState(true)
   const [selectedSlot, setSelectedSlot] = useState(null)
-  const [booker, setBooker] = useState({ name: '', phone: '', email: '' })
+  const [booker, setBooker] = useState({ name: '', phone: '', email: '', consultant: '' })
   const [persons, setPersons] = useState([{ name: '', cert: 'LPA' }])
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [done, setDone] = useState(null)
 
-  useEffect(() => {
-    load()
-  }, [])
+  useEffect(() => { load() }, [])
 
   async function load() {
     setLoading(true)
@@ -77,6 +75,7 @@ export default function ClientPanel() {
         booker_name: booker.name.trim(),
         phone: booker.phone.trim(),
         email: booker.email.trim(),
+        consultant: booker.consultant.trim(),
         slot_time: selectedSlot,
         arrived: false,
         done: false,
@@ -86,7 +85,7 @@ export default function ClientPanel() {
       }
       const personRows = persons.map(p => ({ name: p.name.trim(), cert: p.cert }))
       const created = await createBooking(booking, personRows)
-      setDone({ id: created.id, slot: selectedSlot, persons })
+      setDone({ id: created.id, slot: selectedSlot, persons, consultant: booker.consultant.trim() })
     } catch (e) {
       setError('Booking failed: ' + e.message)
     }
@@ -96,7 +95,7 @@ export default function ClientPanel() {
   function reset() {
     setDone(null)
     setSelectedSlot(null)
-    setBooker({ name: '', phone: '', email: '' })
+    setBooker({ name: '', phone: '', email: '', consultant: '' })
     setPersons([{ name: '', cert: 'LPA' }])
     setError('')
     load()
@@ -117,9 +116,14 @@ export default function ClientPanel() {
               {done.id.slice(0, 8).toUpperCase()}
             </div>
             <div style={{ fontSize: 13, marginBottom: 4 }}><b>Slot:</b> {fmt12(done.slot)}</div>
-            <div style={{ fontSize: 13 }}>
+            <div style={{ fontSize: 13, marginBottom: 4 }}>
               <b>Group:</b> {done.persons.map(p => `${p.name} (${p.cert})`).join(', ')}
             </div>
+            {done.consultant && (
+              <div style={{ fontSize: 13, marginBottom: 4 }}>
+                <b>Financial consultant:</b> {done.consultant}
+              </div>
+            )}
             <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: '0.75rem' }}>
               Please bring all required documents and arrive 5 minutes early.
             </div>
@@ -164,9 +168,15 @@ export default function ClientPanel() {
               <input type="tel" placeholder="+65 9123 4567" value={booker.phone} onChange={e => setBooker({ ...booker, phone: e.target.value })} />
             </div>
           </div>
-          <div className="form-group" style={{ marginTop: '1rem', marginBottom: 0 }}>
-            <label>Email address</label>
-            <input type="email" placeholder="you@email.com" value={booker.email} onChange={e => setBooker({ ...booker, email: e.target.value })} />
+          <div className="form-row" style={{ marginTop: '1rem', marginBottom: 0 }}>
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label>Email address</label>
+              <input type="email" placeholder="you@email.com" value={booker.email} onChange={e => setBooker({ ...booker, email: e.target.value })} />
+            </div>
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label>Financial consultant <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0, color: 'var(--muted)', fontSize: 11 }}>(optional)</span></label>
+              <input type="text" placeholder="Consultant's name" value={booker.consultant} onChange={e => setBooker({ ...booker, consultant: e.target.value })} />
+            </div>
           </div>
         </div>
 
