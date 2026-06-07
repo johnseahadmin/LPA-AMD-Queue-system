@@ -6,7 +6,6 @@ import DisplayPanel from './pages/DisplayPanel'
 import { Toast, useToast } from './components/Toast'
 
 const TABS = [
-  { id: 'client',      label: 'Book a slot',   icon: 'ti-calendar-plus' },
   { id: 'facilitator', label: 'Facilitator',   icon: 'ti-layout-dashboard' },
   { id: 'certifier',   label: 'Certifier',     icon: 'ti-stethoscope' },
   { id: 'display',     label: 'Display board', icon: 'ti-device-tv' },
@@ -16,11 +15,12 @@ export default function App() {
   const [tab, setTab] = useState('client')
   const { msg, show } = useToast()
 
+  const isClient  = tab === 'client'
   const isDisplay = tab === 'display'
 
   return (
     <>
-      {!isDisplay && (
+      {!isClient && !isDisplay && (
         <nav className="nav">
           {TABS.map(t => (
             <button
