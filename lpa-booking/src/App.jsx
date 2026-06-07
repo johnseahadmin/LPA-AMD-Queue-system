@@ -32,7 +32,35 @@ export default function App() {
               {t.label}
             </button>
           ))}
+          <button
+            className="nav-btn"
+            style={{ marginLeft: 'auto' }}
+            onClick={() => setTab('client')}
+          >
+            <i className="ti ti-arrow-left" /> Back to booking
+          </button>
         </nav>
+      )}
+
+      {isClient && (
+        <div style={{ position: 'fixed', bottom: 16, right: 16, zIndex: 200 }}>
+          <button
+            onClick={() => setTab('facilitator')}
+            style={{
+              background: 'rgba(139,26,26,0.08)',
+              border: '0.5px solid rgba(139,26,26,0.2)',
+              borderRadius: 20,
+              padding: '6px 14px',
+              fontSize: 11,
+              color: 'var(--ash)',
+              cursor: 'pointer',
+              fontFamily: 'DM Sans, sans-serif',
+              letterSpacing: '0.05em',
+            }}
+          >
+            Staff login
+          </button>
+        </div>
       )}
 
       {tab === 'client'      && <ClientPanel />}
