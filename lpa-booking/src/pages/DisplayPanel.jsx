@@ -3,7 +3,7 @@ import { getSession, getRooms, getBookings } from '../lib/supabase'
 import { supabase } from '../lib/supabase'
 import { fmt12, formatDate } from '../lib/utils'
 
-const POSTER = 'https://i.ibb.co/qM3bSTGq/lpa-amd-poster.png'
+const POSTER = 'https://i.ibb.co/5h2PJMcQ/lpa-amd-poster.png'
 
 function Clock() {
   const [now, setNow] = useState(new Date())
