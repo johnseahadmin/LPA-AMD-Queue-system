@@ -19,6 +19,7 @@ function PersonRow({ index, value, onChange }) {
           <select value={value.cert} onChange={e => onChange({ ...value, cert: e.target.value })}>
             <option value="LPA">LPA only</option>
             <option value="LPA+AMD">LPA + AMD</option>
+            <option value="AMD">AMD only</option>
           </select>
         </div>
       </div>
@@ -112,7 +113,7 @@ export default function ClientPanel() {
           <p className="subtitle">See you on {formatDate(session.date)} at {fmt12(done.slot)}</p>
           <div className="card" style={{ maxWidth: 360, margin: '1.5rem auto', textAlign: 'left' }}>
             <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 4 }}>Booking reference</div>
-            <div className="mono" style={{ fontSize: 15, fontWeight: 500, color: 'var(--teal)', marginBottom: '1rem' }}>
+            <div className="mono" style={{ fontSize: 15, fontWeight: 500, color: 'var(--crimson)', marginBottom: '1rem' }}>
               {done.id.slice(0, 8).toUpperCase()}
             </div>
             <div style={{ fontSize: 13, marginBottom: 4 }}><b>Slot:</b> {fmt12(done.slot)}</div>
@@ -217,7 +218,7 @@ export default function ClientPanel() {
           </div>
         </div>
 
-        {error && <p style={{ color: 'var(--red)', fontSize: 13, marginBottom: '0.75rem' }}>{error}</p>}
+        {error && <p style={{ color: 'var(--crimson)', fontSize: 13, marginBottom: '0.75rem' }}>{error}</p>}
         <button className="btn btn-primary btn-full" onClick={submit} disabled={submitting}>
           {submitting ? <><i className="ti ti-loader-2" /> Booking…</> : <><i className="ti ti-check" /> Confirm booking</>}
         </button>
