@@ -3,6 +3,8 @@ import { getSession, getRooms, getBookings } from '../lib/supabase'
 import { supabase } from '../lib/supabase'
 import { fmt12, formatDate } from '../lib/utils'
 
+const POSTER = 'https://i.ibb.co/qM3bSTGq/lpa-amd-poster.png'
+
 function Clock() {
   const [now, setNow] = useState(new Date())
   useEffect(() => {
@@ -43,7 +45,6 @@ function RoomCard({ room, bookings }) {
       backdropFilter: 'blur(16px)',
       WebkitBackdropFilter: 'blur(16px)',
     }}>
-      {/* top accent line */}
       <div style={{
         position: 'absolute', top: 0, left: 0, right: 0, height: 2,
         background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent)',
@@ -52,7 +53,7 @@ function RoomCard({ room, bookings }) {
       <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: 4 }}>
         {room.name}
       </div>
-      <div style={{ fontFamily: 'Cormorant Garamond, serif', fontStyle: 'italic', fontSize: 15, color: 'rgba(255,255,255,0.7)', marginBottom: '2rem' }}>
+      <div style={{ fontFamily: 'Poppins, sans-serif', fontSize: 13, color: 'rgba(255,255,255,0.7)', marginBottom: '2rem' }}>
         {room.certifier}
       </div>
 
@@ -61,7 +62,7 @@ function RoomCard({ room, bookings }) {
           <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 6 }}>
             Now serving
           </div>
-          <div style={{ fontSize: 28, fontWeight: 400, marginBottom: 6, lineHeight: 1.2, fontFamily: 'Cormorant Garamond, serif', color: '#FFFFFF' }}>
+          <div style={{ fontSize: 28, fontWeight: 500, marginBottom: 6, lineHeight: 1.2, fontFamily: 'Poppins, sans-serif', color: '#FFFFFF' }}>
             {current.booker_name}
           </div>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 8 }}>
@@ -87,7 +88,7 @@ function RoomCard({ room, bookings }) {
           </div>
         </>
       ) : (
-        <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 15, fontFamily: 'Cormorant Garamond, serif', fontStyle: 'italic' }}>
+        <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 15, fontStyle: 'italic' }}>
           No client in room
         </div>
       )}
@@ -95,7 +96,7 @@ function RoomCard({ room, bookings }) {
       {next && (
         <div style={{ marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.15)' }}>
           <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '1px' }}>Up next</div>
-          <div style={{ fontSize: 16, color: 'rgba(255,255,255,0.75)', fontFamily: 'Cormorant Garamond, serif' }}>{next.booker_name}</div>
+          <div style={{ fontSize: 16, color: 'rgba(255,255,255,0.75)', fontFamily: 'Poppins, sans-serif' }}>{next.booker_name}</div>
           <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2, fontFamily: 'DM Mono, monospace' }}>{fmt12(next.slot_time)}</div>
         </div>
       )}
@@ -138,25 +139,23 @@ export default function DisplayPanel() {
   return (
     <div style={{
       minHeight: '100vh',
-      backgroundImage: 'url(/lpa_amd_poster.png)',
+      backgroundImage: `url(${POSTER})`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       position: 'relative',
-      fontFamily: 'DM Sans, sans-serif',
+      fontFamily: 'Poppins, sans-serif',
       color: '#FFFFFF',
     }}>
-      {/* Overlay — lighter so poster shows through */}
       <div style={{
         position: 'fixed', inset: 0,
-        background: 'rgba(80,10,10,0.55)',
+        background: 'rgba(60,8,8,0.55)',
         zIndex: 0,
       }} />
 
-      {/* Content */}
       <div style={{ position: 'relative', zIndex: 1, padding: '2.5rem' }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <div style={{ fontSize: 36, fontWeight: 300, fontFamily: 'Cormorant Garamond, serif', color: '#FFFFFF', marginBottom: 4, letterSpacing: '0.02em' }}>
+            <div style={{ fontSize: 36, fontWeight: 300, fontFamily: 'Poppins, sans-serif', color: '#FFFFFF', marginBottom: 4, letterSpacing: '0.02em' }}>
               LPA &amp; AMD Certification
             </div>
             <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', letterSpacing: '0.04em' }}>
@@ -170,7 +169,7 @@ export default function DisplayPanel() {
           {rooms.length ? rooms.map(r => (
             <RoomCard key={r.id} room={r} bookings={bookings} />
           )) : (
-            <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 15, fontFamily: 'Cormorant Garamond, serif', fontStyle: 'italic' }}>
+            <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 15, fontStyle: 'italic' }}>
               No rooms configured for this session.
             </div>
           )}
