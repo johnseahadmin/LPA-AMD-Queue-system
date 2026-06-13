@@ -3,8 +3,6 @@ import { getSession, getRooms, getBookings } from '../lib/supabase'
 import { supabase } from '../lib/supabase'
 import { fmt12, formatDate } from '../lib/utils'
 
-const POSTER = 'https://i.ibb.co/5h2PJMcQ/lpa-amd-poster.png'
-
 function Clock() {
   const [now, setNow] = useState(new Date())
   useEffect(() => {
@@ -12,18 +10,25 @@ function Clock() {
     return () => clearInterval(t)
   }, [])
   return (
-    <div style={{ textAlign: 'right' }}>
-      <div style={{ fontSize: 36, fontWeight: 300, fontFamily: 'DM Mono, monospace', color: '#FFFFFF', lineHeight: 1 }}>
+    <div style={{
+      background: '#1B2E6B',
+      color: '#fff',
+      borderRadius: 10,
+      padding: '8px 16px',
+      textAlign: 'center',
+      minWidth: 90,
+    }}>
+      <div style={{ fontFamily: 'DM Mono, monospace', fontSize: 22, fontWeight: 500, lineHeight: 1 }}>
         {now.toLocaleTimeString('en-SG', { hour: '2-digit', minute: '2-digit' })}
       </div>
-      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', marginTop: 4 }}>
-        {now.toLocaleDateString('en-SG', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}
+      <div style={{ fontSize: 10, opacity: 0.7, marginTop: 3, letterSpacing: '0.05em' }}>
+        {now.toLocaleDateString('en-SG', { day: 'numeric', month: 'short', year: 'numeric' })}
       </div>
     </div>
   )
 }
 
-function RoomCard({ room, bookings }) {
+function RoomCard({ room, bookings, index }) {
   const queue = bookings
     .filter(b => b.room_id === room.id && !b.cancelled && !b.done && b.arrived)
     .sort((a, b) => a.slot_time.localeCompare(b.slot_time))
@@ -32,78 +37,131 @@ function RoomCard({ room, bookings }) {
   const next = queue[1]
   const certs = current ? [...new Set((current.persons || []).map(p => p.cert))] : []
 
+  const colors = ['#1B2E6B', '#8B1A1A', '#1A6B3C', '#6B4A1A']
+  const color = colors[index % colors.length]
+
   return (
     <div style={{
       flex: 1,
-      background: 'rgba(255,255,255,0.12)',
-      border: '1px solid rgba(255,255,255,0.25)',
+      minWidth: 280,
+      background: '#FFFFFF',
       borderRadius: 16,
-      padding: '2rem',
-      minWidth: 260,
-      position: 'relative',
       overflow: 'hidden',
-      backdropFilter: 'blur(16px)',
-      WebkitBackdropFilter: 'blur(16px)',
+      boxShadow: '0 4px 24px rgba(0,0,0,0.10)',
+      display: 'flex',
+      flexDirection: 'column',
     }}>
       <div style={{
-        position: 'absolute', top: 0, left: 0, right: 0, height: 2,
-        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent)',
-      }} />
-
-      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: 4 }}>
-        {room.name}
-      </div>
-      <div style={{ fontFamily: 'Poppins, sans-serif', fontSize: 13, color: 'rgba(255,255,255,0.7)', marginBottom: '2rem' }}>
-        {room.certifier}
-      </div>
-
-      {current ? (
-        <>
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 6 }}>
-            Now serving
+        background: color,
+        padding: '16px 24px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}>
+        <div>
+          <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600, marginBottom: 2 }}>
+            {room.name}
           </div>
-          <div style={{ fontSize: 28, fontWeight: 500, marginBottom: 6, lineHeight: 1.2, fontFamily: 'Poppins, sans-serif', color: '#FFFFFF' }}>
-            {current.booker_name}
+          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)', fontWeight: 400 }}>
+            {room.certifier}
           </div>
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 8 }}>
-            {certs.map(c => (
-              <span key={c} style={{
-                display: 'inline-block',
-                background: 'rgba(255,255,255,0.2)',
-                color: '#FFFFFF',
-                border: '1px solid rgba(255,255,255,0.35)',
-                padding: '3px 10px',
-                borderRadius: 20,
-                fontSize: 11,
-                fontWeight: 600,
-                letterSpacing: '0.05em',
-                textTransform: 'uppercase',
-              }}>
-                {c}
-              </span>
-            ))}
-          </div>
-          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontFamily: 'DM Mono, monospace' }}>
-            {fmt12(current.slot_time)} · {current.persons?.length || 1} person(s)
-          </div>
-        </>
-      ) : (
-        <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 15, fontStyle: 'italic' }}>
-          No client in room
         </div>
-      )}
+        <div style={{
+          background: 'rgba(255,255,255,0.15)',
+          borderRadius: 8,
+          padding: '4px 12px',
+          fontSize: 11,
+          color: 'rgba(255,255,255,0.8)',
+          fontWeight: 500,
+        }}>
+          {queue.length} waiting
+        </div>
+      </div>
+
+      <div style={{ padding: '24px', flex: 1 }}>
+        <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '2px', color: '#999', fontWeight: 600, marginBottom: 12 }}>
+          Now serving
+        </div>
+
+        {current ? (
+          <>
+            <div style={{
+              fontSize: 52,
+              fontWeight: 700,
+              color: color,
+              lineHeight: 1,
+              marginBottom: 8,
+              fontFamily: 'Poppins, sans-serif',
+              letterSpacing: '-1px',
+            }}>
+              {current.booker_name.split(' ')[0].toUpperCase()}
+            </div>
+            <div style={{ fontSize: 14, color: '#444', fontWeight: 500, marginBottom: 6 }}>
+              {current.booker_name}
+            </div>
+            <div style={{ fontSize: 12, color: '#999', fontFamily: 'DM Mono, monospace', marginBottom: 12 }}>
+              {fmt12(current.slot_time)} · {current.persons?.length || 1} person(s)
+            </div>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              {certs.map(c => (
+                <span key={c} style={{
+                  background: color + '15',
+                  color: color,
+                  border: `1px solid ${color}30`,
+                  padding: '3px 12px',
+                  borderRadius: 20,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                }}>
+                  {c}
+                </span>
+              ))}
+            </div>
+          </>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+            <div style={{
+              fontSize: 42,
+              fontWeight: 700,
+              color: '#D0D8EE',
+              lineHeight: 1,
+              marginBottom: 8,
+              fontFamily: 'Poppins, sans-serif',
+            }}>
+              —
+            </div>
+            <div style={{
+              background: '#F0F4FF',
+              color: '#8A9BB5',
+              padding: '6px 16px',
+              borderRadius: 20,
+              fontSize: 12,
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+            }}>
+              Available
+            </div>
+          </div>
+        )}
+      </div>
 
       {next && (
-        <div style={{ marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.15)' }}>
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '1px' }}>Up next</div>
-          <div style={{ fontSize: 16, color: 'rgba(255,255,255,0.75)', fontFamily: 'Poppins, sans-serif' }}>{next.booker_name}</div>
-          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2, fontFamily: 'DM Mono, monospace' }}>{fmt12(next.slot_time)}</div>
-        </div>
-      )}
-
-      {queue.length > 2 && (
-        <div style={{ marginTop: '1rem', fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>
-          +{queue.length - 2} more in queue
+        <div style={{
+          padding: '14px 24px',
+          background: '#F8FAFF',
+          borderTop: '1px solid #EEF1FB',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10,
+        }}>
+          <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '1.5px', color: '#999', fontWeight: 600, flexShrink: 0 }}>
+            Next
+          </div>
+          <div style={{ fontSize: 13, fontWeight: 500, color: '#333', flex: 1 }}>{next.booker_name}</div>
+          <div style={{ fontSize: 11, color: '#999', fontFamily: 'DM Mono, monospace' }}>{fmt12(next.slot_time)}</div>
         </div>
       )}
     </div>
@@ -136,49 +194,84 @@ export default function DisplayPanel() {
     return () => supabase.removeChannel(sub)
   }, [load])
 
+  const done = bookings.filter(b => b.done && !b.cancelled).length
+  const arrived = bookings.filter(b => b.arrived && !b.cancelled).length
+
   return (
     <div style={{
       minHeight: '100vh',
-      backgroundImage: `url(${POSTER})`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      position: 'relative',
+      background: 'linear-gradient(135deg, #F0F4FF 0%, #F8F9FF 100%)',
       fontFamily: 'Poppins, sans-serif',
-      color: '#FFFFFF',
+      color: '#1A1A2E',
+      display: 'flex',
+      flexDirection: 'column',
     }}>
       <div style={{
-        position: 'fixed', inset: 0,
-        background: 'rgba(60,8,8,0.55)',
-        zIndex: 0,
-      }} />
-
-      <div style={{ position: 'relative', zIndex: 1, padding: '2.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+        background: '#FFFFFF',
+        borderBottom: '1px solid #E0E8F4',
+        padding: '16px 2.5rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        boxShadow: '0 2px 12px rgba(27,46,107,0.06)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div style={{ width: 4, height: 36, background: '#1B2E6B', borderRadius: 2 }} />
           <div>
-            <div style={{ fontSize: 36, fontWeight: 300, fontFamily: 'Poppins, sans-serif', color: '#FFFFFF', marginBottom: 4, letterSpacing: '0.02em' }}>
-              LPA &amp; AMD Certification
+            <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '2px', color: '#8A9BB5', fontWeight: 600 }}>
+              LPA · AMD Certification
             </div>
-            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', letterSpacing: '0.04em' }}>
-              {session?.date ? formatDate(session.date) : 'Please proceed to your assigned room'}
+            <div style={{ fontSize: 20, fontWeight: 600, color: '#1B2E6B', lineHeight: 1.2 }}>
+              Queue Display
             </div>
+          </div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div style={{ fontSize: 12, color: '#8A9BB5', textAlign: 'right' }}>
+            {session?.date ? formatDate(session.date) : ''}
           </div>
           <Clock />
         </div>
+      </div>
 
-        <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
-          {rooms.length ? rooms.map(r => (
-            <RoomCard key={r.id} room={r} bookings={bookings} />
-          )) : (
-            <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 15, fontStyle: 'italic' }}>
-              No rooms configured for this session.
-            </div>
-          )}
+      <div style={{ flex: 1, padding: '2rem 2.5rem', display: 'flex', gap: '1.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+        {rooms.length ? rooms.map((r, i) => (
+          <RoomCard key={r.id} room={r} bookings={bookings} index={i} />
+        )) : (
+          <div style={{ color: '#8A9BB5', fontSize: 15, margin: 'auto', textAlign: 'center', padding: '4rem' }}>
+            No rooms configured for this session.
+          </div>
+        )}
+      </div>
+
+      <div style={{
+        background: '#FFFFFF',
+        borderTop: '1px solid #E0E8F4',
+        padding: '16px 2.5rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}>
+        <div style={{ fontSize: 12, color: '#8A9BB5' }}>
+          Please monitor your SMS notification and remain ready with your IC
         </div>
-
-        <div style={{ marginTop: '3rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.15)', textAlign: 'center' }}>
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.04em' }}>
-            Please wait in the waiting area until your name appears. Bring all required documents.
-          </p>
+        <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 32, fontWeight: 700, color: '#1B2E6B', fontFamily: 'DM Mono, monospace', background: '#EEF1FB', borderRadius: 10, padding: '4px 20px', minWidth: 70 }}>
+              {arrived}
+            </div>
+            <div style={{ fontSize: 10, color: '#8A9BB5', marginTop: 4, textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>
+              Arrived
+            </div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 32, fontWeight: 700, color: '#1A6B3C', fontFamily: 'DM Mono, monospace', background: '#EEF8F2', borderRadius: 10, padding: '4px 20px', minWidth: 70 }}>
+              {done}
+            </div>
+            <div style={{ fontSize: 10, color: '#8A9BB5', marginTop: 4, textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>
+              Completed
+            </div>
+          </div>
         </div>
       </div>
     </div>
